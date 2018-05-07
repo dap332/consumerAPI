@@ -11,6 +11,11 @@ server.get('/', (req, res) =>{
     res.send(`<h1> Hello </h1>`);
 });
 
+server.get('/foo', (req, res) =>{
+    res.send(`<h1> FOO </h1>`);
+});
+
+
 server.post('/', (req, res) => {
     try {
         let data = JSON.parse(JSON.stringify(req.body));
