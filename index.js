@@ -2,6 +2,7 @@
 const server = require('express')();
 const bodyparser = require('body-parser');
 
+const producer = require('./producer');
 const PORT = 80;
 
 server.use(bodyparser.json());
@@ -11,18 +12,19 @@ server.get('/', (req, res) =>{
     res.send(`<h1> Hello </h1>`);
 });
 
-server.get('/foo', (req, res) =>{
-    res.send(`<h1> FOO </h1>`);
-});
-
-
 server.post('/', (req, res) => {
+    let topic;
+    let data;
     try {
-        let data = JSON.parse(JSON.stringify(req.body));
+        topic = JSON.parse(JSON.stringify(req.body.topic));
+        data = JSON.parse(JSON.stringify(req.body.data));
+        producer.produce(topic, data)
+            .then(data => res.end('ok'))
+            .catch(err => (res.send(new Error(err))));
 
-        res.end('ok');
     }catch (e) {
         res.send("error" + req.body);
+        throw e;
     }
 });
 
