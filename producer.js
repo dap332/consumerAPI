@@ -8,32 +8,33 @@ const kafka = require('kafka-node'),
     //since cluster ip can change if svc goes down we use dns
     //dns is found using <svc-name>.<namespace>.svc.cluster.local
     client = new kafka.Client("zookeeper.kubeless.svc.cluster.local:2181");
-    producer = new kafka.Producer(client);
-
+producer = new kafka.Producer(client);
+producer.on('ready', () => {
+    console.log('kafka conn is ready to push to');
+})
 
 
 //why is this executing everytime, I thought this would only run once since it is outside the handle
 console.log('Client connected');
 
-module.exports = {
-    produce : (topic, data) => {
+exports.produce = (topic, data) => {
 
-        payloads = [{topic: topic, messages: data, partition: 0}];
+    payloads = [{topic: topic, messages: data, partition: 0}];
 
-        return new Promise((resolve, reject) => {
-            producer.on('error', (err)=> {
-                reject(err);
-            });
-
-            producer.once('ready', () => {
-                producer.send(payloads, (err, data) => {
-                    if(err) reject(err);
-                   // client.close(() => {
-                        console.log('sent msg');
-                        resolve('sent msg');
-                    //});
-                });
-            });
+    return new Promise((resolve, reject) => {
+        producer.on('error', (err)=> {
+            reject(err);
         });
-    }
-}
+
+
+        producer.send(payloads, (err, data) => {
+            if(err) reject(err);
+            // client.close(() => {
+            console.log('sent msg');
+            resolve('sent msg');
+            //});
+        });
+    });
+
+};
+
