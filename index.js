@@ -18,6 +18,7 @@ server.post('/', (req, res) => {
     try {
         topic = JSON.parse(JSON.stringify(req.body.topic));
         data = JSON.parse(JSON.stringify(req.body.data));
+        console.log('received message');
         producer.produce(topic, data)
             .then(data => res.end('ok'))
             .catch(err => (res.send(new Error(err))));

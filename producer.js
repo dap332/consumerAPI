@@ -21,7 +21,11 @@ module.exports = {
         payloads = [{topic: topic, messages: data, partition: 0}];
 
         return new Promise((resolve, reject) => {
-            producer.on('ready', () => {
+            producer.on('error', (err)=> {
+                reject(err);
+            });
+
+            producer.once('ready', () => {
                 producer.send(payloads, (err, data) => {
                     if(err) reject(err);
                    // client.close(() => {
