@@ -9,8 +9,14 @@ const kafka = require('kafka-node'),
     //dns is found using <svc-name>.<namespace>.svc.cluster.local
     client = new kafka.Client("zookeeper.kubeless.svc.cluster.local:2181");
 producer = new kafka.Producer(client);
+console.log("readying producer...");
 producer.on('ready', () => {
     console.log('kafka conn is ready to push to');
+})
+
+producer.on('error', (err) => {
+    console.log(err);
+    throw err;
 })
 
 
